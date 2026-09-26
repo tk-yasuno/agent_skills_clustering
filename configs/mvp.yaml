@@ -1,0 +1,13 @@
+sources_file: configs/sources.yaml
+artifacts_dir: artifacts
+seed: 42
+
+embedding:
+  model: intfloat/e5-large-v2
+  batch_size: 12
+
+analysis:
+  n_neighbors: 15
+  min_dist: 0.1
+  cluster_dimensions: 10
+  min_cluster_size: 5

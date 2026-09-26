@@ -1,0 +1,21 @@
+repositories:
+  - omnitric/agent-skills
+  - bytedance/deer-flow
+  - K-Dense-AI/scientific-agent-skills
+  - lingzhi227/agent-research-skills
+  - agent-skills-hub/agent-skills-hub
+  - anthropics/skills
+  - addyosmani/agent-skills
+  - vercel-labs/agent-skills
+  - muratcankoylan/Agent-Skills-for-Context-Engineering
+  - supabase/agent-skills
+  - apify/agent-skills
+  - WordPress/agent-skills
+  - openclaw/agent-skills
+  - Kotlin/kotlin-agent-skills
+  - hashicorp/agent-skills
+  - MicrosoftDocs/Agent-Skills
+  - dbt-labs/dbt-agent-skills
+  - elastic/agent-skills
+  - firebase/agent-skills
+  - ClickHouse/agent-skills

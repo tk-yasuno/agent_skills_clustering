@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-skills-clustering"
+version = "0.2.0"
+description = "Collect and explore GitHub Agent Skills with GPU embeddings"
+requires-python = ">=3.12,<3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "hdbscan>=0.8.40",
+    "numpy>=2.0",
+    "plotly>=6.0",
+    "python-frontmatter>=1.1",
+    "pyyaml>=6.0",
+    "requests>=2.32",
+    "sentence-transformers>=4.0",
+    "umap-learn>=0.5.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3"]
+
+[project.scripts]
+agsk = "agent_skills_clustering.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

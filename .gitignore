@@ -1,0 +1,10 @@
+.venv-agsk/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+.env
+artifacts/
+dist/hf-space/
+*.npy
+0_LogBAK
