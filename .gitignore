@@ -4,6 +4,7 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 .env
+hf_access_token.txt
 artifacts/
 dist/hf-space/
 *.npy
