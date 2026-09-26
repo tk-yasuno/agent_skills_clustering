@@ -7,12 +7,22 @@ import numpy as np
 
 from agent_skills_clustering.mesh import build_skill_mesh
 from agent_skills_clustering.models import SkillRecord
-from agent_skills_clustering.visualize import write_huggingface_space, write_mesh_visualization
+from agent_skills_clustering.visualize import (
+    linkedin_draft,
+    write_huggingface_space,
+    write_mesh_visualization,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_SPACE_URL = "https://huggingface.co/spaces/yasunotkt/agent-skills-map"
 
 
-def run_mesh(run_directory: Path, *, target_cluster_count: int = 100) -> Path:
+def run_mesh(
+    run_directory: Path,
+    *,
+    target_cluster_count: int = 100,
+    space_url: str = DEFAULT_SPACE_URL,
+) -> Path:
     run_directory = run_directory.resolve()
     records_data = json.loads((run_directory / "skills.json").read_text(encoding="utf-8"))
     records = [SkillRecord(**record) for record in records_data]
@@ -45,6 +55,10 @@ def run_mesh(run_directory: Path, *, target_cluster_count: int = 100) -> Path:
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     write_huggingface_space(html_file, PROJECT_ROOT / "dist" / "hf-space", manifest)
+    (run_directory / "linkedin_draft.md").write_text(
+        linkedin_draft(manifest, analysis, mesh=mesh, map_url=space_url),
+        encoding="utf-8",
+    )
     return html_file
 
 
@@ -54,8 +68,15 @@ def main() -> None:
     )
     parser.add_argument("run_directory", type=Path, help="A timestamped artifacts run directory")
     parser.add_argument("--clusters", type=int, default=100, help="Target macro-cluster count")
+    parser.add_argument(
+        "--space-url", default=DEFAULT_SPACE_URL, help="Published mesh URL for the LinkedIn draft"
+    )
     args = parser.parse_args()
-    output = run_mesh(args.run_directory, target_cluster_count=args.clusters)
+    output = run_mesh(
+        args.run_directory,
+        target_cluster_count=args.clusters,
+        space_url=args.space_url,
+    )
     print(output)
 
 

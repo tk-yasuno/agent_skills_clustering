@@ -292,16 +292,37 @@ def write_huggingface_space(
     )
 
 
-def linkedin_draft(manifest: dict[str, Any], analysis: dict[str, Any]) -> str:
-    sources = ", ".join(manifest["repositories"])
+def linkedin_draft(
+    manifest: dict[str, Any],
+    analysis: dict[str, Any],
+    *,
+    mesh: dict[str, Any] | None = None,
+    map_url: str | None = None,
+) -> str:
+    destination = map_url or "[Add the published Hugging Face Space URL]"
+    if mesh is None:
+        return (
+            "I mapped Agent Skills from GitHub using embeddings, UMAP, and HDBSCAN.\n\n"
+            f"This exploratory run covers {manifest['skill_count']:,} skills across "
+            f"{manifest['repository_count']} repositories. "
+            f"HDBSCAN marked {analysis['noise_count']:,} skills as unclustered.\n\n"
+            "Explore the map: " + destination + "\n\n"
+            "#AgentSkills #OpenSource #AI"
+        )
+
+    summary = mesh["summary"]
     return (
-        "Agent Skills Category Map (UMAP + HDBSCAN)\n\n"
-        "I built an exploratory map of Agent Skills collected from GitHub.\n\n"
-        f"- Skills analyzed: {manifest['skill_count']}\n"
-        f"- Repositories: {sources}\n"
-        f"- Non-noise clusters: {analysis['cluster_count']}\n"
-        f"- Noise points: {analysis['noise_count']} "
-        f"({analysis['noise_ratio']:.1%})\n\n"
-        "Cluster labels are exploratory and should not be read as validated categories.\n"
-        "Map: [Add the published Hugging Face Space URL]\n"
+        "I built an interactive 2D mesh of "
+        f"{summary['skill_count']:,} Agent Skills from "
+        f"{summary['configured_repository_count']} GitHub repositories.\n\n"
+        f"The view condenses {summary['source_hdbscan_cluster_count']} HDBSCAN clusters "
+        f"into {summary['macro_cluster_count']} macro-clusters while keeping "
+        f"{summary['noise_count']:,} unclustered skills visible. Repository links show "
+        "how sources span the skill landscape.\n\n"
+        f"{summary['labeled_macro_cluster_count']} cluster labels summarize terms from "
+        f"license-eligible descriptions; {summary['repository_fallback_label_count']} "
+        "fall back to repository names. These are exploratory labels, not a "
+        "human-validated taxonomy.\n\n"
+        "Explore the mesh: " + destination + "\n\n"
+        "#AgentSkills #OpenSource #AI"
     )

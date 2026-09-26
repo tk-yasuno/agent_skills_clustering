@@ -2,7 +2,7 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.4, 2026-09-26; collection run v0.2.2)
+## Current status (v0.2.5, 2026-09-26; collection run v0.2.2)
 
 The v0.2.2 end-to-end run completed against all 250 configured repositories and exceeded the 10,000-valid-skill target. GitHub trees contained 12,634 candidate `SKILL.md` files; 11,738 valid records were collected. All 250 repository API/tree scans succeeded. Eight hundred ninety-six individual files were excluded because required frontmatter was missing or invalid.
 
@@ -88,6 +88,8 @@ The generated mesh contains 1,039 repository-membership edges and 287 nearest-ne
 
 Macro-cluster labels are generated from distinctive TF-IDF terms in `name` and `description` fields whose repository SPDX license is on the reuse allowlist. Human-readable topic rules turn these signals into labels such as `Finance & Market Analysis · Berkshire`, `Video & Audio Production · Video`, and `Research & Literature · Paper`; the graph exposes the underlying terms. In this run, 89 labels use licensed-text signals and 11 fall back to a repository name because there was not enough licensed text. Labels are exploratory summaries, not human-reviewed taxonomy.
 
+Mesh generation also writes a concise English LinkedIn draft with the live Space URL to `artifacts/20260926T135448595005Z/linkedin_draft.md`. Review the counts and exploratory-label caveat before posting.
+
 The mesh CLI is included in v0.2.3; it reuses a run's embeddings and UMAP coordinates, so no re-collection or re-embedding is needed. HF Space upload was attempted for `yasunotkt/agent-skills-map` but the cached HF token received HTTP 403 on the upload endpoint. Complete the upload with a Hugging Face token that has write permission for this Space.
 
 ## Publish manually
@@ -95,7 +97,7 @@ The mesh CLI is included in v0.2.3; it reuses a run's embeddings and UMAP coordi
 1. Create a **Static** Space on Hugging Face.
 2. Upload the contents of `dist/hf-space/` to the Space repository root.
 3. Open the Space URL and verify the map and source links.
-4. Review `artifacts/<run-id>/linkedin_draft.md`; replace the map URL and confirm all counts before posting.
+4. Review `artifacts/<run-id>/linkedin_draft.md`, confirm the counts and caveat, then post manually. The draft includes the configured Space URL.
 
 Descriptions are included in hover text only when the repository reports an SPDX license on the reuse allowlist. This is a conservative display check, not legal advice; verify file-level licensing before redistribution. Source repository and commit links are retained in the map and run manifest.
 

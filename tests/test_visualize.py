@@ -2,6 +2,7 @@ import numpy as np
 
 from agent_skills_clustering.models import SkillRecord
 from agent_skills_clustering.visualize import (
+    linkedin_draft,
     write_huggingface_space,
     write_visualization,
 )
@@ -69,3 +70,33 @@ def test_huggingface_space_includes_cluster_summary(tmp_path):
     assert "HDBSCAN clusters: 3" in readme
     assert "Noise points: 2 (20.0%)" in readme
     assert (destination / "index.html").read_text(encoding="utf-8") == "<html>map</html>"
+
+
+def test_linkedin_draft_is_concise_english_and_uses_mesh_results():
+    manifest = {"skill_count": 11738, "repository_count": 250}
+    analysis = {"noise_count": 2946, "noise_ratio": 0.251}
+    mesh = {
+        "summary": {
+            "skill_count": 11738,
+            "configured_repository_count": 250,
+            "source_hdbscan_cluster_count": 512,
+            "macro_cluster_count": 100,
+            "noise_count": 2946,
+            "labeled_macro_cluster_count": 89,
+            "repository_fallback_label_count": 11,
+        }
+    }
+
+    draft = linkedin_draft(
+        manifest,
+        analysis,
+        mesh=mesh,
+        map_url="https://huggingface.co/spaces/yasunotkt/agent-skills-map",
+    )
+
+    assert "11,738 Agent Skills" in draft
+    assert "100 macro-clusters" in draft
+    assert "89 cluster labels" in draft
+    assert "not a human-validated taxonomy" in draft
+    assert "https://huggingface.co/spaces/yasunotkt/agent-skills-map" in draft
+    assert len(draft.split()) < 100
