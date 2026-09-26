@@ -2,49 +2,33 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.1, 2026-09-26)
+## Current status (v0.2.2, 2026-09-26)
 
-The v0.2.1 end-to-end run completed against all 100 configured repositories. GitHub trees contained 4,742 candidate `SKILL.md` files; 4,703 valid records were collected. All 100 repository API/tree scans succeeded. Thirty-nine individual files were excluded because required frontmatter was missing or invalid.
+The v0.2.2 end-to-end run completed against all 250 configured repositories and exceeded the 10,000-valid-skill target. GitHub trees contained 12,634 candidate `SKILL.md` files; 11,738 valid records were collected. All 250 repository API/tree scans succeeded. Eight hundred ninety-six individual files were excluded because required frontmatter was missing or invalid.
 
 | Collection result | Count |
 | --- | ---: |
-| Repositories configured and scanned | 100 |
-| `SKILL.md` files discovered | 4,742 |
-| Skill records collected | 4,703 |
-| Individual skill files rejected | 39 |
+| Repositories configured and scanned | 250 |
+| `SKILL.md` files discovered | 12,634 |
+| Skill records collected | 11,738 |
+| Individual skill files rejected | 896 |
 | Repository-level scan errors | 0 |
 | Missing `raw` fields in `skills.json` | 0 |
+| Collection target | 10,000 valid skills |
 
-The 39 rejected files comprised 31 missing `name` fields, 6 invalid YAML frontmatter blocks, and 2 missing `description` fields. Failures were concentrated in these repositories:
+The 896 rejected files comprised 667 missing `name` fields, 226 invalid YAML frontmatter blocks, and 3 missing `description` fields. Rejections were concentrated in `alirezarezvani/claude-skills` (458), `euwebertdefreitas/ai-skills-for-claude-code` (180), `nexscope-ai/eCommerce-Skills` (42), `EliasOulkadi/shokunin` (39), and `nexscope-ai/nexscope-ecommerce-skills` (35). No repository-level API/tree errors occurred.
 
-| Repository | Rejected files |
-| --- | ---: |
-| `career-ops-hq/career-ops` | 8 |
-| `bmad-code-org/BMAD-METHOD` | 6 |
-| `omnitric/agent-skills` | 3 |
-| `bytedance/deer-flow` | 2 |
-| `agent-skills-hub/agent-skills-hub` | 1 |
-| `openclaw/openclaw` | 1 |
-| `microsoft/playwright` | 1 |
-| `ruvnet/RuView` | 1 |
-| `thedotmack/claude-mem` | 3 |
-| `paperclipai/paperclip` | 1 |
-| `lobehub/lobehub` | 2 |
-| `ruvnet/ruflo` | 1 |
-| `ZhuLinsen/daily_stock_analysis` | 3 |
-| `calesthio/OpenMontage` | 2 |
-| `code-yeongyu/oh-my-openagent` | 1 |
-| `topoteretes/cognee` | 3 |
+Run `20260926T135448595005Z` used `intfloat/e5-large-v2` revision `f169b11e22de13617baa190a028a32f3493550b6` on an NVIDIA GeForce RTX 4060 Ti with 16 GiB VRAM. The normalized embeddings are 1,024-dimensional. UMAP/HDBSCAN produced 512 clusters and 2,946 noise points (25.10%). The run's `skills.json` contains all 11,738 records with original `SKILL.md` text and is approximately 126.2 MB.
 
-Run `20260926T121333779837Z` used `intfloat/e5-large-v2` revision `f169b11e22de13617baa190a028a32f3493550b6` on an NVIDIA GeForce RTX 4060 Ti with 16 GiB VRAM. The normalized embeddings are 1,024-dimensional. UMAP/HDBSCAN produced 228 clusters and 1,188 noise points (25.26%). The run's `skills.json` contains all 4,703 records with original `SKILL.md` text and is approximately 47.2 MB.
+UMAP's spectral initialization warned about a small eigengap and fell back to random initialization; the full run completed and generated the map. Treat the 512 HDBSCAN labels as exploratory groups, not validated semantic categories.
 
-Run artifacts are in `artifacts/20260926T121333779837Z/`; the standalone map is `artifacts/20260926T121333779837Z/index.html`. The run refreshed `dist/hf-space/`. v0.2.1 includes 100 fixed sources and `GH_PAT`-first authentication with `GITHUB_TOKEN` fallback. The full test suite passes (14 tests). Hugging Face Space creation/upload and LinkedIn posting remain manual and have not been performed.
+Run artifacts are in `artifacts/20260926T135448595005Z/`; the standalone map is `artifacts/20260926T135448595005Z/index.html`. The run refreshed `dist/hf-space/`. The full test suite passes (14 tests). Hugging Face Space creation/upload and LinkedIn posting remain manual and have not been performed.
 
 ## Requirements
 
 - Windows 10/11, Python 3.12, and a recent NVIDIA driver
 - CUDA-capable NVIDIA GPU; the runtime records the detected model and VRAM
-- A GitHub token is required for the configured 100 repositories to avoid the unauthenticated core API limit.
+- A GitHub token is required for the configured 250 repositories to avoid the unauthenticated core API limit.
 
 ## Environment setup (PowerShell)
 
