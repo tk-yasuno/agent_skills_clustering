@@ -2,7 +2,7 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.2, 2026-09-26)
+## Current status (v0.2.3, 2026-09-26; collection run v0.2.2)
 
 The v0.2.2 end-to-end run completed against all 250 configured repositories and exceeded the 10,000-valid-skill target. GitHub trees contained 12,634 candidate `SKILL.md` files; 11,738 valid records were collected. All 250 repository API/tree scans succeeded. Eight hundred ninety-six individual files were excluded because required frontmatter was missing or invalid.
 
@@ -71,6 +71,22 @@ agsk --cpu
 ```
 
 The pipeline writes a timestamped run under `artifacts/`. Each run's `skills.json` is a JSON array with extracted metadata, provenance, content hash, and the original `SKILL.md` text. Embeddings and analysis stay in separate files. The pipeline also refreshes `dist/hf-space/`, which contains only a static Space `README.md`, `index.html`, and summary `manifest.json`; it does not include the raw skill records. HTML includes Plotly JavaScript and can be opened offline.
+
+## Repository/cluster mesh
+
+To regenerate the aggregated mesh from an existing run without repeating GitHub collection or embeddings:
+
+```powershell
+agsk-mesh artifacts\<run-id> --clusters 100
+```
+
+The mesh merges HDBSCAN cluster centroids with cosine average-linkage agglomeration. HDBSCAN noise remains a separate node. The 2D node positions use mean UMAP coordinates; repository nodes link to their most represented macro-clusters, and macro-clusters link to their nearest embedding neighbors. Repository node color encodes normalized Shannon entropy across macro-clusters as a measure of representation breadth, not quality. The command writes `mesh.json` and `mesh.html` into the run directory and publishes the mesh as `dist/hf-space/index.html`.
+
+For run `20260926T135448595005Z`, the mesh aggregates the 512 HDBSCAN clusters into 100 macro-clusters, retains one separate noise node, and represents 247 of the 250 configured repositories. The three repositories with no valid skill records are listed in `mesh.json`; they have no point coordinates and are intentionally not drawn as repository nodes.
+
+The generated mesh contains 1,039 repository-membership edges and 287 nearest-neighbor macro-cluster edges. Mean normalized repository entropy across macro-clusters is 14.24%; this describes how broadly each repository's skills are distributed across the mesh and is not a quality score. Outputs are `artifacts/20260926T135448595005Z/mesh.json` and `artifacts/20260926T135448595005Z/mesh.html`; the Hugging Face bundle's `index.html` now uses the mesh view.
+
+The mesh CLI is included in v0.2.3; it reuses a run's embeddings and UMAP coordinates, so no re-collection or re-embedding is needed. HF Space upload was attempted for `yasunotkt/agent-skills-map` but the cached HF token received HTTP 403 on the upload endpoint. Complete the upload with a Hugging Face token that has write permission for this Space.
 
 ## Publish manually
 
