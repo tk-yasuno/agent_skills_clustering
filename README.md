@@ -2,42 +2,49 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.0, 2026-09-26)
+## Current status (v0.2.1, 2026-09-26)
 
-The v0.2.0 end-to-end run completed on the configured 20 repositories. GitHub tree metadata reported 1,512 candidate `SKILL.md` files; 1,506 were valid and collected, and six were rejected or failed during fetch/frontmatter validation.
+The v0.2.1 end-to-end run completed against all 100 configured repositories. GitHub trees contained 4,742 candidate `SKILL.md` files; 4,703 valid records were collected. All 100 repository API/tree scans succeeded. Thirty-nine individual files were excluded because required frontmatter was missing or invalid.
 
-| Repository | Discovered | Collected | Failed | GitHub SPDX license |
-| --- | ---: | ---: | ---: | --- |
-| `omnitric/agent-skills` | 35 | 32 | 3 | Not reported |
-| `bytedance/deer-flow` | 33 | 31 | 2 | MIT |
-| `K-Dense-AI/scientific-agent-skills` | 166 | 166 | 0 | MIT |
-| `lingzhi227/agent-research-skills` | 31 | 31 | 0 | Not reported |
-| `agent-skills-hub/agent-skills-hub` | 812 | 811 | 1 | MIT |
-| `anthropics/skills` | 20 | 20 | 0 | Not reported |
-| `addyosmani/agent-skills` | 25 | 25 | 0 | MIT |
-| `vercel-labs/agent-skills` | 9 | 9 | 0 | Not reported |
-| `muratcankoylan/Agent-Skills-for-Context-Engineering` | 23 | 23 | 0 | MIT |
-| `supabase/agent-skills` | 2 | 2 | 0 | MIT |
-| `apify/agent-skills` | 5 | 5 | 0 | Not reported |
-| `WordPress/agent-skills` | 19 | 19 | 0 | NOASSERTION |
-| `openclaw/agent-skills` | 8 | 8 | 0 | MIT |
-| `Kotlin/kotlin-agent-skills` | 10 | 10 | 0 | Apache-2.0 |
-| `hashicorp/agent-skills` | 20 | 20 | 0 | MPL-2.0 |
-| `MicrosoftDocs/Agent-Skills` | 202 | 202 | 0 | CC-BY-4.0 |
-| `dbt-labs/dbt-agent-skills` | 16 | 16 | 0 | Apache-2.0 |
-| `elastic/agent-skills` | 52 | 52 | 0 | Apache-2.0 |
-| `firebase/agent-skills` | 13 | 13 | 0 | Apache-2.0 |
-| `ClickHouse/agent-skills` | 11 | 11 | 0 | Apache-2.0 |
+| Collection result | Count |
+| --- | ---: |
+| Repositories configured and scanned | 100 |
+| `SKILL.md` files discovered | 4,742 |
+| Skill records collected | 4,703 |
+| Individual skill files rejected | 39 |
+| Repository-level scan errors | 0 |
+| Missing `raw` fields in `skills.json` | 0 |
 
-Run `20260926T111754504482Z` used `intfloat/e5-large-v2` revision `f169b11e22de13617baa190a028a32f3493550b6` on an NVIDIA GeForce RTX 4060 Ti with 16 GiB VRAM. The normalized embeddings are 1,024-dimensional. UMAP/HDBSCAN produced 82 clusters and 459 noise points (30.48%). The run's `skills.json` contains all 1,506 records with raw `SKILL.md` text; its size is approximately 18.3 MB. No raw field was missing.
+The 39 rejected files comprised 31 missing `name` fields, 6 invalid YAML frontmatter blocks, and 2 missing `description` fields. Failures were concentrated in these repositories:
 
-Run artifacts are in `artifacts/20260926T111754504482Z/`; the standalone map is `artifacts/20260926T111754504482Z/index.html`. The run refreshed `dist/hf-space/`. v0.2 includes `GH_PAT`-first authentication with `GITHUB_TOKEN` fallback. The full test suite passes (14 tests). Hugging Face Space creation/upload and LinkedIn posting remain manual and have not been performed.
+| Repository | Rejected files |
+| --- | ---: |
+| `career-ops-hq/career-ops` | 8 |
+| `bmad-code-org/BMAD-METHOD` | 6 |
+| `omnitric/agent-skills` | 3 |
+| `bytedance/deer-flow` | 2 |
+| `agent-skills-hub/agent-skills-hub` | 1 |
+| `openclaw/openclaw` | 1 |
+| `microsoft/playwright` | 1 |
+| `ruvnet/RuView` | 1 |
+| `thedotmack/claude-mem` | 3 |
+| `paperclipai/paperclip` | 1 |
+| `lobehub/lobehub` | 2 |
+| `ruvnet/ruflo` | 1 |
+| `ZhuLinsen/daily_stock_analysis` | 3 |
+| `calesthio/OpenMontage` | 2 |
+| `code-yeongyu/oh-my-openagent` | 1 |
+| `topoteretes/cognee` | 3 |
+
+Run `20260926T121333779837Z` used `intfloat/e5-large-v2` revision `f169b11e22de13617baa190a028a32f3493550b6` on an NVIDIA GeForce RTX 4060 Ti with 16 GiB VRAM. The normalized embeddings are 1,024-dimensional. UMAP/HDBSCAN produced 228 clusters and 1,188 noise points (25.26%). The run's `skills.json` contains all 4,703 records with original `SKILL.md` text and is approximately 47.2 MB.
+
+Run artifacts are in `artifacts/20260926T121333779837Z/`; the standalone map is `artifacts/20260926T121333779837Z/index.html`. The run refreshed `dist/hf-space/`. v0.2.1 includes 100 fixed sources and `GH_PAT`-first authentication with `GITHUB_TOKEN` fallback. The full test suite passes (14 tests). Hugging Face Space creation/upload and LinkedIn posting remain manual and have not been performed.
 
 ## Requirements
 
 - Windows 10/11, Python 3.12, and a recent NVIDIA driver
 - CUDA-capable NVIDIA GPU; the runtime records the detected model and VRAM
-- A GitHub token is optional for a small public-repository run. For the configured 20 repositories, use a read-only token to avoid the unauthenticated core API limit.
+- A GitHub token is required for the configured 100 repositories to avoid the unauthenticated core API limit.
 
 ## Environment setup (PowerShell)
 
