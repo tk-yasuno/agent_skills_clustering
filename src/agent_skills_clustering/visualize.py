@@ -7,18 +7,8 @@ from typing import Any
 import numpy as np
 import plotly.graph_objects as go
 
+from agent_skills_clustering.licensing import REUSABLE_LICENSES
 from agent_skills_clustering.models import SkillRecord
-
-REUSABLE_LICENSES = {
-    "0BSD",
-    "Apache-2.0",
-    "BSD-2-Clause",
-    "BSD-3-Clause",
-    "CC0-1.0",
-    "ISC",
-    "MIT",
-}
-
 
 def write_visualization(
     records: list[SkillRecord],
@@ -122,6 +112,7 @@ def write_mesh_visualization(mesh: dict[str, Any], output_file: Path) -> None:
                 node["skill_count"],
                 node["source_count"],
                 node["hdbscan_cluster_count"],
+                ", ".join(node["label_keywords"]),
                 ", ".join(
                     f"{html.escape(item['repo'])} ({item['skill_count']})"
                     for item in node["top_repositories"]
@@ -152,7 +143,8 @@ def write_mesh_visualization(mesh: dict[str, Any], output_file: Path) -> None:
                     "<b>%{text}</b><br>Skills: %{customdata[0]}<br>"
                     "Repositories: %{customdata[1]}<br>"
                     "HDBSCAN clusters merged: %{customdata[2]}<br>"
-                    "Top repositories: %{customdata[3]}"
+                    "Topic signals: %{customdata[3]}<br>"
+                    "Top repositories: %{customdata[4]}"
                     "<extra></extra>"
                 ),
             )
@@ -268,6 +260,10 @@ def write_huggingface_space(
             f"{mesh_results['repository_count']} repositories, "
             f"mean repository richness "
             f"{mesh_results['mean_repository_richness']:.1%}.\n\n"
+            f"Human-readable keyword labels: "
+            f"{mesh_results.get('labeled_macro_cluster_count', 0)}; "
+            f"repository-name fallbacks: "
+            f"{mesh_results.get('repository_fallback_label_count', 0)}.\n\n"
         )
     (destination / "README.md").write_text(
         "---\n"
@@ -286,6 +282,8 @@ def write_huggingface_space(
         f"Noise points: {manifest['analysis_results']['noise_count']} "
         f"({manifest['analysis_results']['noise_ratio']:.1%})\n\n"
         f"{mesh_summary}"
+        "Macro-cluster names are automatic keyword summaries from descriptions whose SPDX licenses are on the reuse allowlist. "
+        "They are exploratory topic hints, not human-reviewed categories. The displayed topic signals explain each label.\n\n"
         "See the source links in the visualization for provenance.\n",
         encoding="utf-8",
     )

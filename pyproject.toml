@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-skills-clustering"
-version = "0.2.3"
+version = "0.2.4"
 description = "Collect and explore GitHub Agent Skills with GPU embeddings"
 requires-python = ">=3.12,<3.14"
 license = "MIT"
@@ -16,6 +16,7 @@ dependencies = [
     "python-frontmatter>=1.1",
     "pyyaml>=6.0",
     "requests>=2.32",
+    "scikit-learn>=1.6",
     "sentence-transformers>=4.0",
     "umap-learn>=0.5.7",
 ]

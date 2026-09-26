@@ -2,7 +2,7 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.3, 2026-09-26; collection run v0.2.2)
+## Current status (v0.2.4, 2026-09-26; collection run v0.2.2)
 
 The v0.2.2 end-to-end run completed against all 250 configured repositories and exceeded the 10,000-valid-skill target. GitHub trees contained 12,634 candidate `SKILL.md` files; 11,738 valid records were collected. All 250 repository API/tree scans succeeded. Eight hundred ninety-six individual files were excluded because required frontmatter was missing or invalid.
 
@@ -85,6 +85,8 @@ The mesh merges HDBSCAN cluster centroids with cosine average-linkage agglomerat
 For run `20260926T135448595005Z`, the mesh aggregates the 512 HDBSCAN clusters into 100 macro-clusters, retains one separate noise node, and represents 247 of the 250 configured repositories. The three repositories with no valid skill records are listed in `mesh.json`; they have no point coordinates and are intentionally not drawn as repository nodes.
 
 The generated mesh contains 1,039 repository-membership edges and 287 nearest-neighbor macro-cluster edges. Mean normalized repository entropy across macro-clusters is 14.24%; this describes how broadly each repository's skills are distributed across the mesh and is not a quality score. Outputs are `artifacts/20260926T135448595005Z/mesh.json` and `artifacts/20260926T135448595005Z/mesh.html`; the Hugging Face bundle's `index.html` now uses the mesh view.
+
+Macro-cluster labels are generated from distinctive TF-IDF terms in `name` and `description` fields whose repository SPDX license is on the reuse allowlist. Human-readable topic rules turn these signals into labels such as `Finance & Market Analysis · Berkshire`, `Video & Audio Production · Video`, and `Research & Literature · Paper`; the graph exposes the underlying terms. In this run, 89 labels use licensed-text signals and 11 fall back to a repository name because there was not enough licensed text. Labels are exploratory summaries, not human-reviewed taxonomy.
 
 The mesh CLI is included in v0.2.3; it reuses a run's embeddings and UMAP coordinates, so no re-collection or re-embedding is needed. HF Space upload was attempted for `yasunotkt/agent-skills-map` but the cached HF token received HTTP 403 on the upload endpoint. Complete the upload with a Hugging Face token that has write permission for this Space.
 
