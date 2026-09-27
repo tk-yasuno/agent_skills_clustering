@@ -1,5 +1,6 @@
 import argparse
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -7,6 +8,11 @@ import numpy as np
 
 from agent_skills_clustering.mesh import build_skill_mesh
 from agent_skills_clustering.models import SkillRecord
+from agent_skills_clustering.reporting import (
+    build_macro_repository_matrix,
+    write_macro_repository_heatmap,
+    write_trend_report,
+)
 from agent_skills_clustering.visualize import (
     linkedin_draft,
     write_huggingface_space,
@@ -49,12 +55,20 @@ def run_mesh(
     mesh_file.write_text(json.dumps(mesh, ensure_ascii=False, indent=2), encoding="utf-8")
     html_file = run_directory / "mesh.html"
     write_mesh_visualization(mesh, html_file)
+    matrix = build_macro_repository_matrix(mesh, records_data, limit=20)
+    heatmap_file = run_directory / "macro_repository_heatmap.html"
+    write_macro_repository_heatmap(matrix, heatmap_file)
+    trend_file = run_directory / "TREND_AgentSkiils2026Sept.md"
+    write_trend_report(mesh, matrix, manifest, trend_file, space_url=space_url)
 
     manifest["mesh_results"] = mesh["summary"]
+    manifest["mesh_results"]["heatmap_file"] = heatmap_file.name
+    manifest["mesh_results"]["trend_report_file"] = trend_file.name
     manifest_file.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     write_huggingface_space(html_file, PROJECT_ROOT / "dist" / "hf-space", manifest)
+    shutil.copy2(heatmap_file, PROJECT_ROOT / "dist" / "hf-space" / "macro_repository_heatmap.html")
     (run_directory / "linkedin_draft.md").write_text(
         linkedin_draft(manifest, analysis, mesh=mesh, map_url=space_url),
         encoding="utf-8",

@@ -86,6 +86,8 @@ For run `20260926T135448595005Z`, the mesh aggregates the 512 HDBSCAN clusters i
 
 The generated mesh contains 1,039 repository-membership edges and 287 nearest-neighbor macro-cluster edges. Mean normalized repository entropy across macro-clusters is 14.24%; this describes how broadly each repository's skills are distributed across the mesh and is not a quality score. Outputs are `artifacts/20260926T135448595005Z/mesh.json` and `artifacts/20260926T135448595005Z/mesh.html`; the Hugging Face bundle's `index.html` now uses the mesh view.
 
+For LinkedIn analysis, `artifacts/20260926T135448595005Z/TREND_AgentSkiils2026Sept.md` records the top 20 macro-clusters, one concrete open-source repository example per cluster, reader-oriented observations, and a concise English post draft. `macro_repository_heatmap.html` visualizes the top 20 macro-clusters against the top 20 repositories as skill-count cells; it is also included in the Hugging Face bundle.
+
 Macro-cluster labels are generated from distinctive TF-IDF terms in `name` and `description` fields whose repository SPDX license is on the reuse allowlist. Human-readable topic rules turn these signals into labels such as `Finance & Market Analysis · Berkshire`, `Video & Audio Production · Video`, and `Research & Literature · Paper`; the graph exposes the underlying terms. In this run, 89 labels use licensed-text signals and 11 fall back to a repository name because there was not enough licensed text. Labels are exploratory summaries, not human-reviewed taxonomy.
 
 Mesh generation also writes a concise English LinkedIn draft with the live Space URL to `artifacts/20260926T135448595005Z/linkedin_draft.md`. Review the counts and exploratory-label caveat before posting.

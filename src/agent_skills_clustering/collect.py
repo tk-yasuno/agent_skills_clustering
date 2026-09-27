@@ -21,7 +21,7 @@ def make_session() -> requests.Session:
     session.headers.update(
         {
             "Accept": "application/vnd.github+json",
-            "User-Agent": "agent-skills-clustering/0.2.5",
+            "User-Agent": "agent-skills-clustering/0.2.6",
             "X-GitHub-Api-Version": "2022-11-28",
         }
     )
