@@ -56,4 +56,5 @@ def test_reporting_builds_top20_matrix_and_english_trend_report(tmp_path):
     assert "Research & Literature" in text
     assert "owner/research" in text
     assert "LinkedIn draft" in text
+    assert "/resolve/main/macro_repository_heatmap.html" in text
     assert "https://huggingface.co/spaces/example/mesh" in text

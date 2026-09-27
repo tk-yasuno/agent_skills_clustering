@@ -129,7 +129,7 @@ def write_trend_report(
 - Human-readable macro-clusters: {macro_cluster_count}
     - Unclustered skills: {noise_display}
 - Public mesh: {space_url}
-- Heatmap: {space_url}/macro_repository_heatmap.html
+- Heatmap: {space_url}/resolve/main/macro_repository_heatmap.html
 
 Agent Skills are being used across a broad range of repeatable tasks rather than one narrow use case. The strongest visible areas are documentation and models, finance and market analysis, frontend and interface design, video and audio production, research and literature, command-line tools, security, cloud infrastructure, office documents, e-commerce, and code review.
 
