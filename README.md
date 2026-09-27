@@ -2,7 +2,7 @@
 
 A reproducible MVP that collects `name` and `description` from GitHub `SKILL.md` files, embeds them with E5-large-v2 on a CUDA GPU, clusters the vectors, and generates a self-contained Plotly map.
 
-## Current status (v0.2.5, 2026-09-26; collection run v0.2.2)
+## Current status (v0.2.9, 2026-09-27; collection run v0.2.2)
 
 The v0.2.2 end-to-end run completed against all 250 configured repositories and exceeded the 10,000-valid-skill target. GitHub trees contained 12,634 candidate `SKILL.md` files; 11,738 valid records were collected. All 250 repository API/tree scans succeeded. Eight hundred ninety-six individual files were excluded because required frontmatter was missing or invalid.
 
@@ -22,7 +22,7 @@ Run `20260926T135448595005Z` used `intfloat/e5-large-v2` revision `f169b11e22de1
 
 UMAP's spectral initialization warned about a small eigengap and fell back to random initialization; the full run completed and generated the map. Treat the 512 HDBSCAN labels as exploratory groups, not validated semantic categories.
 
-Run artifacts are in `artifacts/20260926T135448595005Z/`; the standalone map is `artifacts/20260926T135448595005Z/index.html`. The run refreshed `dist/hf-space/`. The full test suite passes (14 tests). Hugging Face Space creation/upload and LinkedIn posting remain manual and have not been performed.
+Run artifacts are in `artifacts/20260926T135448595005Z/`; the collection map is `artifacts/20260926T135448595005Z/index.html`. The full test suite passes (22 tests). The collection artifact remains local and is excluded from Git.
 
 ## Requirements
 
@@ -86,7 +86,7 @@ For run `20260926T135448595005Z`, the mesh aggregates the 512 HDBSCAN clusters i
 
 The generated mesh contains 1,039 repository-membership edges and 287 nearest-neighbor macro-cluster edges. Mean normalized repository entropy across macro-clusters is 14.24%; this describes how broadly each repository's skills are distributed across the mesh and is not a quality score. Outputs are `artifacts/20260926T135448595005Z/mesh.json` and `artifacts/20260926T135448595005Z/mesh.html`; the Hugging Face bundle's `index.html` now uses the mesh view.
 
-The published Space `index.html` contains both the mesh and heatmap on one page. Use the Space **App** tab to view them; the repository `blob` page is only a source-code viewer and may show “File too large” for the standalone Plotly HTML.
+The published Space `index.html` contains both the mesh and heatmap on one page. Use the Space **App** tab to view them; the repository `blob` page is only a source-code viewer and may show “File too large” for the standalone Plotly HTML. The direct heatmap download is available at [macro_repository_heatmap.html](https://huggingface.co/spaces/yasunotkt/agent-skills-map/resolve/main/macro_repository_heatmap.html).
 
 For LinkedIn analysis, `artifacts/20260926T135448595005Z/TREND_AgentSkiils2026Sept.md` records the top 20 macro-clusters, one concrete open-source repository example per cluster, reader-oriented observations, and a concise English post draft. `macro_repository_heatmap.html` visualizes the top 20 macro-clusters against the top 20 repositories as skill-count cells; it is also included in the Hugging Face bundle.
 
@@ -94,14 +94,24 @@ Macro-cluster labels are generated from distinctive TF-IDF terms in `name` and `
 
 Mesh generation also writes a concise English LinkedIn draft with the live Space URL to `artifacts/20260926T135448595005Z/linkedin_draft.md`. Review the counts and exploratory-label caveat before posting.
 
-The mesh CLI is included in v0.2.3; it reuses a run's embeddings and UMAP coordinates, so no re-collection or re-embedding is needed. HF Space upload was attempted for `yasunotkt/agent-skills-map` but the cached HF token received HTTP 403 on the upload endpoint. Complete the upload with a Hugging Face token that has write permission for this Space.
+The mesh CLI is included in v0.2.9; it reuses a run's embeddings and UMAP coordinates, so no re-collection or re-embedding is needed. Human-readable labels use rule-assisted TF-IDF topic signals and expose their evidence terms in hover text. Labels are exploratory, not a validated taxonomy.
+
+## Published outputs
+
+The updated mesh is publicly available at [yasunotkt/agent-skills-map](https://huggingface.co/spaces/yasunotkt/agent-skills-map). The Space is a Static app and publishes:
+
+- `index.html`: combined repository/cluster mesh and macro-cluster/repository heatmap
+- `macro_repository_heatmap.html`: standalone heatmap download
+- `TREND_AgentSkiils2026Sept.md`: English trend analysis and LinkedIn draft
+- `manifest.json`: collection, clustering, mesh, and provenance summary
+
+The current GitHub implementation is v0.2.9. The public HF Space was updated through reviewed Space pull requests; LinkedIn posting remains a deliberate manual step.
 
 ## Publish manually
 
-1. Create a **Static** Space on Hugging Face.
-2. Upload the contents of `dist/hf-space/` to the Space repository root.
-3. Open the Space URL and verify the map and source links.
-4. Review `artifacts/<run-id>/linkedin_draft.md`, confirm the counts and caveat, then post manually. The draft includes the configured Space URL.
+1. Open the [published HF Space](https://huggingface.co/spaces/yasunotkt/agent-skills-map) and select the **App** tab.
+2. Review `artifacts/<run-id>/linkedin_draft.md`, confirm the counts and exploratory-label caveat, then post the English draft manually.
+3. Use the [Trend report](https://huggingface.co/spaces/yasunotkt/agent-skills-map/TREND_AgentSkiils2026Sept.md) for the top-20 macro-cluster examples and current-trend context.
 
 Descriptions are included in hover text only when the repository reports an SPDX license on the reuse allowlist. This is a conservative display check, not legal advice; verify file-level licensing before redistribution. Source repository and commit links are retained in the map and run manifest.
 
