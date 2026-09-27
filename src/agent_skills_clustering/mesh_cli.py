@@ -69,6 +69,10 @@ def run_mesh(
     )
     write_huggingface_space(html_file, PROJECT_ROOT / "dist" / "hf-space", manifest)
     shutil.copy2(heatmap_file, PROJECT_ROOT / "dist" / "hf-space" / "macro_repository_heatmap.html")
+    shutil.copy2(
+        trend_file,
+        PROJECT_ROOT / "dist" / "hf-space" / "TREND_AgentSkiils2026Sept.md",
+    )
     (run_directory / "linkedin_draft.md").write_text(
         linkedin_draft(manifest, analysis, mesh=mesh, map_url=space_url),
         encoding="utf-8",

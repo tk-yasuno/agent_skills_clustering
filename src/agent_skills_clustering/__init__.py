@@ -1,3 +1,3 @@
 """GitHub Agent Skills collection and clustering pipeline."""
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"

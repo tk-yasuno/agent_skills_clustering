@@ -96,6 +96,7 @@ def write_trend_report(
     source_cluster_count = summary.get("source_hdbscan_cluster_count", "N/A")
     macro_cluster_count = summary.get("macro_cluster_count", len(top_macros))
     noise_count = summary.get("noise_count", "N/A")
+    noise_display = format(noise_count, ",") if isinstance(noise_count, int) else noise_count
     rows = []
     for index, macro in enumerate(top_macros, start=1):
         row_values = matrix["values"][index - 1]
@@ -110,50 +111,59 @@ def write_trend_report(
         f"I mapped {total_skills:,} Agent Skills from {manifest['repository_count']} GitHub repositories "
         "into a 2D repository/cluster mesh.\n\n"
         f"The map condenses {source_cluster_count} HDBSCAN groups into "
-        f"{macro_cluster_count} macro-clusters and keeps {noise_count} unclustered skills visible. "
+        f"{macro_cluster_count} macro-clusters and keeps {noise_display} unclustered skills visible. "
         "The heatmap makes the strongest macro-cluster/repository relationships easy to compare.\n\n"
         "The leading themes include document and slide workflows, research and literature, media production, "
         "finance, memory, infrastructure, frontend, and e-commerce. Labels are automated topic hints, not a validated taxonomy.\n\n"
         f"Explore the mesh: {space_url}\n\n"
         "#AgentSkills #OpenSource #AI"
     )
-    report = f"""# Agent Skills Trends — September 2026
+    report = f"""# Trendo of Agent Skiils 2026 Sept
 
-## Scope
+> Agent Skills landscape: {manifest['repository_count']} repositories, {manifest['skill_count']:,} valid skills, and {macro_cluster_count} macro-clusters.
 
-- Repositories: {manifest['repository_count']}
+## What Readers Should Know
+
 - Valid skills: {manifest['skill_count']:,}
-    - Source HDBSCAN clusters: {source_cluster_count}
-    - Macro-clusters: {macro_cluster_count}
-    - Unclustered skills: {noise_count}
-- Heatmap: `macro_repository_heatmap.html`
+- Source HDBSCAN clusters: {source_cluster_count}
+- Human-readable macro-clusters: {macro_cluster_count}
+    - Unclustered skills: {noise_display}
 - Public mesh: {space_url}
+- Heatmap: {space_url}/macro_repository_heatmap.html
 
-## Reader takeaway
+Agent Skills are being used across a broad range of repeatable tasks rather than one narrow use case. The strongest visible areas are documentation and models, finance and market analysis, frontend and interface design, video and audio production, research and literature, command-line tools, security, cloud infrastructure, office documents, e-commerce, and code review.
 
-Agent Skills are not concentrated in one narrow use case. The top macro-clusters span office documents and slides, research and literature, media production, model/data infrastructure, memory and meeting work, frontend/interface design, e-commerce, finance, and developer operations. The distribution indicates a growing surface area of repeatable agent work rather than a single dominant category.
+Three patterns stand out:
 
-The heatmap should be read as a relationship map: a bright cell means that a repository contributes many skills to a macro-cluster. It does not mean that the repository owns the category or that the category is a human-validated taxonomy.
+1. **Breadth:** the ecosystem covers both knowledge work and engineering work, from research papers and presentations to deployment, databases, UI, and security.
+2. **Specialization and reuse:** some repositories contribute strongly to a narrow theme, while large hubs contribute skills across many macro-clusters.
+    3. **A long tail:** {noise_display} skills remain unclustered by HDBSCAN, suggesting many emerging or specialized tasks.
 
-The repository examples below are concrete open-source sources for each leading macro-cluster. They are examples, not exclusive memberships.
+The heatmap is a relationship map: a brighter cell means that a repository contributes more skills to a macro-cluster. It does not mean that the repository owns the category or that the category is a human-validated taxonomy.
 
-## Top 20 macro-clusters
+## Top 20 Macro-Clusters and Concrete Repository Examples
+
+The table gives one open-source repository example for every leading macro-cluster. These are representative examples, not exclusive memberships.
 
 | Rank | Macro-cluster | Skills | Share | Example repository |
 | ---: | --- | ---: | ---: | --- |
 {chr(10).join(rows)}
 
-## Cross-repository signal
+## Current Trend
 
-The most frequent repositories in the collected sample include {top_names}. The mesh highlights both specialization and breadth: some repositories concentrate on a small number of themes, while others contribute across many macro-clusters. Repository richness is measured with normalized entropy over macro-cluster membership and should be interpreted as breadth of representation, not quality.
+The most frequent repositories in the collected sample include {top_names}. The leading signal is not a single winning category; it is the expansion of the task surface that agents can repeatedly perform.
 
-## Method and limits
+The mesh shows a practical distinction between **skill hubs** and **specialists**. Hubs appear across many macro-clusters, while specialist repositories form concentrated bright cells in the heatmap. Repository richness uses normalized entropy as a breadth indicator, not as a quality score.
+
+## Method and Limits
 
 Embeddings use `intfloat/e5-large-v2`; UMAP provides the 2D coordinates; HDBSCAN supplies the source clusters; cosine average-linkage agglomeration creates 100 macro-clusters. Human-readable labels use distinctive TF-IDF terms from `name` and `description` fields where the repository SPDX license is on the reuse allowlist, with repository-name fallback when licensed text is insufficient. Labels are exploratory and require human review before being treated as categories. The sample is fixed to the configured repositories and is not a census of Agent Skills.
 
 ## LinkedIn draft
 
 ```text
+Trendo of Agent Skiils 2026 Sept
+
 {english_post}
 ```
 """

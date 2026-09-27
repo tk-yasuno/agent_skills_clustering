@@ -52,6 +52,7 @@ def test_reporting_builds_top20_matrix_and_english_trend_report(tmp_path):
 
     assert "plotly.js" in heatmap.read_text(encoding="utf-8")
     text = report.read_text(encoding="utf-8")
+    assert text.startswith("# Trendo of Agent Skiils 2026 Sept")
     assert "Research & Literature" in text
     assert "owner/research" in text
     assert "LinkedIn draft" in text
