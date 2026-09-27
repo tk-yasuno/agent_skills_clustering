@@ -23,6 +23,29 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPACE_URL = "https://huggingface.co/spaces/yasunotkt/agent-skills-map"
 
 
+def _combine_plotly_pages(mesh_file: Path, heatmap_file: Path, output_file: Path) -> None:
+    def body_fragment(path: Path) -> str:
+        document = path.read_text(encoding="utf-8")
+        return document.split("<body>", 1)[1].split("</body>", 1)[0]
+
+    output_file.write_text(
+        "<!doctype html><html><head><meta charset='utf-8'>"
+        "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "<title>Agent Skills Mesh and Heatmap</title>"
+        "<style>body{font-family:system-ui,sans-serif;margin:0;color:#22343b}"
+        ".section{padding:18px 2vw;border-bottom:1px solid #d8e1e4}"
+        "h1{font-size:1.35rem;margin:.2rem 0 .8rem}"
+        ".plot{width:100%;min-height:720px}</style></head><body>"
+        "<div class='section'><h1>Agent Skills Repository / Cluster Mesh</h1>"
+        "<p>Scroll to compare the 2D mesh with the macro-cluster / repository heatmap.</p>"
+        f"{body_fragment(mesh_file)}"
+        "</div><div class='section'><h1>Macro-Cluster / Repository Heatmap</h1>"
+        f"{body_fragment(heatmap_file)}"
+        "</div></body></html>",
+        encoding="utf-8",
+    )
+
+
 def run_mesh(
     run_directory: Path,
     *,
@@ -58,6 +81,8 @@ def run_mesh(
     matrix = build_macro_repository_matrix(mesh, records_data, limit=20)
     heatmap_file = run_directory / "macro_repository_heatmap.html"
     write_macro_repository_heatmap(matrix, heatmap_file)
+    portal_file = run_directory / "index.html"
+    _combine_plotly_pages(html_file, heatmap_file, portal_file)
     trend_file = run_directory / "TREND_AgentSkiils2026Sept.md"
     write_trend_report(mesh, matrix, manifest, trend_file, space_url=space_url)
 
@@ -67,7 +92,7 @@ def run_mesh(
     manifest_file.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    write_huggingface_space(html_file, PROJECT_ROOT / "dist" / "hf-space", manifest)
+    write_huggingface_space(portal_file, PROJECT_ROOT / "dist" / "hf-space", manifest)
     shutil.copy2(heatmap_file, PROJECT_ROOT / "dist" / "hf-space" / "macro_repository_heatmap.html")
     shutil.copy2(
         trend_file,
